@@ -10,7 +10,7 @@
       [:li
         [:blockquote message] [:p "Created - " [:time created]]])])
 
-(defn home [& [name message error]] (layout/common
+(defn home [& [message error]] (layout/common
   [:h1 "Love Notes"]
   [:p error]
   (show-messages)
@@ -20,5 +20,16 @@
   (text-area {:rows 10 :cols 40} "message" message) [:br]
   (submit-button "comment"))))
 
+(defn save-message [message]
+ (cond
+   (empty? message)
+   (home message "Don't you have something to say?")
+   :else
+   (do
+     (db/save-note message)
+     (home))))
+
 (defroutes home-routes
-  (GET "/" [] (home)))
+  (GET "/" [] (home))
+  (POST "/" [message] (save-message message)))
+
